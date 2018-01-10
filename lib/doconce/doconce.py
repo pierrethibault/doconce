@@ -3639,7 +3639,11 @@ def typeset_authors(filestr, format):
     filestr = filestr.replace('XXXAUTHOR', author_block)
     return filestr
 
-def typeset_section_numbering(filestr, format):
+def typeset_section_numbering(filestr, format, max_level='subsubsection'):
+    """
+    Add numbers to section headers up to the indicated max_level.
+    max_level='subsection' should be the default to be consistent with latex.
+    """
     chapter = section = subsection = subsubsection = 0
     # Do we have chapters?
     from .common import chapter_pattern
@@ -3663,12 +3667,16 @@ def typeset_section_numbering(filestr, format):
             section = subsection = subsubsection = 0
             lines[i] = re.sub(r'^========= ', '========= %s ' %
                               counter(chapter), lines[i])
-        elif lines[i].startswith('======= '):
+        if max_level == 'chapter':
+            continue
+        if lines[i].startswith('======= '):
             section += 1
             subsection = subsubsection = 0
             lines[i] = re.sub(r'^======= ', '======= %s ' %
                               counter(chapter, section), lines[i])
-        elif lines[i].startswith('===== '):
+        if max_level == 'section':
+            continue
+        if lines[i].startswith('===== '):
             # Skip exercises
             if option('examples_as_exercises'):
                 pattern = '===== +\{?(Exercise|Project|Problem|Example)'
@@ -3681,7 +3689,9 @@ def typeset_section_numbering(filestr, format):
             lines[i] = re.sub(r'^===== ', '===== %s ' %
                               counter(chapter, section, subsection),
                               lines[i])
-        elif lines[i].startswith('=== '):
+        if max_level == 'subsection':
+            continue
+        if lines[i].startswith('=== '):
             subsubsection += 1
             lines[i] = re.sub(r'^=== ', '=== %s ' %
                               counter(chapter, section, subsection, subsubsection),
@@ -4675,8 +4685,9 @@ def doconce2format(filestr, format):
     # (Do this late, after exercises, but before TOC[] is called and
     # sections are substituted)
     if format not in ('latex', 'pdflatex'):
-        if option('section_numbering=', 'off') == 'on':
-            filestr = typeset_section_numbering(filestr, format)
+        section_numbering_opt = option('section_numbering=', 'off')
+        if section_numbering_opt != 'off':
+            filestr = typeset_section_numbering(filestr, format, section_numbering_opt)
             debugpr('The file after numbering of chapters and sections:', filestr)
 
     # Next step: deal with cross referencing (must occur before other format subst)

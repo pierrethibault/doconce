@@ -1009,9 +1009,17 @@ def latex_code(filestr, code_blocks, code_block_types,
         filestr = re.sub(r'\\begin\{center\} % date.+?\\end\{center\}', '',
                          filestr, flags=re.DOTALL)
 
-
-    if option('section_numbering=', 'on') == 'off':
+    section_numbering_opt = option('section_numbering=', 'on')
+    if section_numbering_opt == 'off':
+        # Why aren't chapter numbering also turned off?
         filestr = filestr.replace('section{', 'section*{')
+    elif section_numbering_opt == 'chapter':
+        filestr = filestr.replace('section{', 'section*{')
+    elif section_numbering_opt == 'section':
+        filestr = filestr.replace('subsection{', 'subsection*{')
+    elif section_numbering_opt == 'subsection':
+        # This doesn't do anything unless \subsubsection{} is enabled instead of \paragraph{}
+        filestr = filestr.replace('subsubsection{', 'subsubsection*{')
 
     # Support for (*@pause@*) in slides to allow for parts of code blocks
     # to pop up

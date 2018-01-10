@@ -305,7 +305,8 @@ envir:package-background[style parameters]@)
     ('--latex_bibstyle=',
      'LaTeX bibliography style. Default: plain.'),
     ('--section_numbering=',
-     'Turn section numbering on/off. Default: off for all formats except latex and pdflatex (on for those).'),
+     """Turn section numbering on/off. Default: off for all formats except latex and pdflatex (on for those).
+     Also accept 'chapter', 'section' and 'subsection' to limit numbering down to a given level."""),
     ('--latex_table_format=',
      'Default: quote. Other values: left, center, footnotesize, tiny.'),
     ('--latex_table_row_sep=',
