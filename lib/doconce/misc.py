@@ -250,7 +250,14 @@ none, off: no rules
 top: rule at top (default)
 bottom: rule at bottom
 top+bottom: rule at top and bottom"""),
-    ('--html_copyright=', 'Controls where to put copyright statements.\neverypage: in the footer of every page\ntitlepages or titlepage: in the footer of the titlepage only (default).'),
+    ('--html_copyright=', """Controls where to put copyright statements.
+everypage: in the footer of every page
+titlepages or titlepage: in the footer of the titlepage only (default)."""),
+    ('--html_footnotes=', """Formatting options for footnotes.
+on: show all footnotes (default)
+none, off: remove footnotes
+hidden: show only as tooltips in bootstrap options, treat as on otherwise
+hrule: as 'on', and sandwiched between horizontal rules."""),
     ('--cite_doconce', 'Adds a citation to the DocOnce web page if copyright statements are present.'),
     ('--device=',
      """Set device to paper, screen, or other (paper impacts LaTeX output)."""),

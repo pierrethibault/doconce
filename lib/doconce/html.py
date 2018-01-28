@@ -1834,19 +1834,29 @@ def html_footnotes(filestr, format, pattern_def, pattern_footnote):
 
     name2index = {names[i]: i+1 for i in range(len(names))}
 
-    def subst_def(m):
-        # Make a table for the definition
-        name = m.group('name').strip()
-        text = m.group('text').strip()
-        html = '\n<p id="def_footnote_%s"><a href="#link_footnote_%s"><b>%s:</b></a> %s</p>\n' % (name2index[name], name2index[name], name2index[name], text)
-        # (<a name=""></a> is later replaced by a div tag)
-        return html
+    if option('html_footnotes=', '') in ['off', 'none', 'hidden']:
+        # Do not show the footnote
+        def subst_def(m):
+            return ''
+    else:
+        def subst_def(m):
+            # Make a table for the definition
+            name = m.group('name').strip()
+            text = m.group('text').strip()
+            html = '\n<p id="def_footnote_%s"><a href="#link_footnote_%s"><b>%s:</b></a> %s</p>\n' % (name2index[name], name2index[name], name2index[name], text)
+            # (<a name=""></a> is later replaced by a div tag)
+            if option('html_footnotes=', '') == 'hrule':
+                html = '\n<hr>' + html + '<hr>\n'
+            return html
 
     filestr = re.sub(pattern_def, subst_def, filestr,
                      flags=re.MULTILINE|re.DOTALL)
 
     def subst_footnote(m):
         name = m.group('name').strip()
+        if option('html_footnotes=', '') in ['off', 'none']:
+            # nothing to do
+            return ''
         if name in name2index:
             i = name2index[m.group('name')]
         else:
@@ -1880,7 +1890,10 @@ def html_footnotes(filestr, format, pattern_def, pattern_footnote):
                     errwarn('    from tooltip (since it does not work with bootstrap tooltips)')
                     errwarn(text)
                 text = newtext
-            html = ' <button type="button" class="btn btn-primary btn-xs" rel="tooltip" data-placement="top" title="%s"><a href="#def_footnote_%s" id="link_footnote_%s" style="color: white">%s</a></button>' % (text, i, i, i)
+            if option('html_footnotes=', '') == 'hidden':
+                html = ' <button type="button" class="btn btn-primary btn-xs" rel="tooltip" data-placement="top" title="%s">%s</button>' % (text, i)
+            else:
+                html = ' <button type="button" class="btn btn-primary btn-xs" rel="tooltip" data-placement="top" title="%s"><a href="#def_footnote_%s" id="link_footnote_%s" style="color: white">%s</a></button>' % (text, i, i, i)
             # (<a name=""></a> is later replaced by a div tag)
         else:
             html = r' [<a id="link_footnote_%s" href="#def_footnote_%s">%s</a>]' % (i, i, i)
